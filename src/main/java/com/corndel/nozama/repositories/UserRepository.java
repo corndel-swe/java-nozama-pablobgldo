@@ -30,8 +30,28 @@ public class UserRepository {
     }
   }
 
-  public static User findById(int id) throws SQLException {
-    // TODO: finish this method
-    return null;
+  public static User findById(int _id) throws SQLException {
+    var query = "SELECT id, username, firstName, lastName, email, avatar FROM users WHERE id = ?";
+
+    try (var connection = DB.getConnection();
+         var statement = connection.prepareStatement(query)) {
+      statement.setInt(1, _id);
+
+      try (var resultSet = statement.executeQuery()) {
+
+        if (!resultSet.next()) {
+          return null;
+        }
+
+        var id = resultSet.getInt("id");
+        var username = resultSet.getString("username");
+        var firstName = resultSet.getString("firstName");
+        var lastName = resultSet.getString("lastName");
+        var email = resultSet.getString("email");
+        var avatar = resultSet.getString("avatar");
+        return new User(id, username, firstName, lastName, email, avatar);
+      }
+    }
   }
 }
+
